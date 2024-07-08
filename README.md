@@ -39,22 +39,7 @@ fn main() {
 Methods
 - `new(items: &[T]) -> Self`: Constructs a new `FuzzyPicker` instance with a list of items.
 - `pick() -> Result<Option<T>, Box<dyn Error>>`: Initiates the interactive selection process. Returns Some(selected_item) if an item is selected, or None if selection is cancelled.
-Example
-```rust
-use fuzzypicker::FuzzyPicker;
 
-fn main() {
-    let items = vec!["rust", "python", "javascript", "java", "c++", "go", "swift"];
-
-    let mut picker = FuzzyPicker::new(&items);
-
-    if let Ok(Some(selected_language)) = picker.pick() {
-        println!("Selected language: {}", selected_language);
-    } else {
-        println!("No language selected or selection cancelled.");
-    }
-}
-```
 ## Contributing
 Contributions are welcome! If you'd like to contribute to `fuzzypicker`, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
 
