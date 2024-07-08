@@ -11,11 +11,6 @@ Add fuzzypicker to your Cargo.toml dependencies:
 ```bash
 cargo add fuzzypicker
 ```
-or
-```toml
-[dependencies]
-fuzzypicker = "0.1.0"
-```
 ## Usage
 Here's a basic example demonstrating how to use fuzzypicker to implement a fuzzy selection mechanism in a Rust CLI application:
 
