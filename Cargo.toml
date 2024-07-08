@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.com/galib45/fuzzypicker"
 homepage = "https://github.com/galib45/fuzzypicker"
 readme = "README.md"
-keywords = ["rust", "library", "fuzzy-search", "command-line", "interactive", "picker"]
+keywords = ["rust", "library", "fuzzy-search", "command-line", "picker"]
 categories = ["development-tools", "text-processing"]
 
 [dependencies]
