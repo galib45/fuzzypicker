@@ -1,11 +1,12 @@
 [package]
 name = "fuzzypicker"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A Rust library for fuzzy searching and interactive selection of items in command-line applications."
 license = "MIT"
-repository = "https://github.com/galib45/fuzzypicker"
-homepage = "https://github.com/galib45/fuzzypicker"
+repository = "https://github.com/galib45/{name}"
+homepage = "https://github.com/galib45/{name}"
+documentation = "https://docs.rs/{name}/{version}/{name}"
 readme = "README.md"
 keywords = ["rust", "library", "fuzzy-search", "command-line", "picker"]
 categories = ["development-tools", "text-processing"]

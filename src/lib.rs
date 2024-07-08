@@ -1,3 +1,31 @@
+//! # Fuzzypicker
+//!
+//! `fuzzypicker` is a Rust library for interactive fuzzy searching and selection of items in command-line applications.
+//!
+//! ## Features
+//!
+//! - Fuzzy searching of items based on user input.
+//! - Interactive selection with keyboard and mouse support.
+//! - Designed for integration into Rust-based command-line tools.
+//!
+//! ## Example
+//!
+//! ```rust
+//! use fuzzypicker::FuzzyPicker;
+//!
+//! fn main() {
+//!     let items = vec!["rust", "python", "javascript", "java", "c++", "go", "swift"];
+//!
+//!     let mut picker = FuzzyPicker::new(&items);
+//!
+//!     if let Ok(Some(selected_language)) = picker.pick() {
+//!         println!("Selected language: {}", selected_language);
+//!     } else {
+//!         println!("No language selected or selection cancelled.");
+//!     }
+//! }
+//! ```
+
 use std::io::{Stdout, stdout, Write};
 use std::fmt::Display;
 use std::clone::Clone;
@@ -20,6 +48,7 @@ use crossterm::{
 use fuzzy_matcher::FuzzyMatcher;
 use fuzzy_matcher::skim::SkimMatcherV2;
 
+/// Struct representing a fuzzy picker for interactive item selection.
 pub struct FuzzyPicker<T: Display + Clone> {
     stdout: Stdout, 
     matcher: SkimMatcherV2,
@@ -33,6 +62,15 @@ pub struct FuzzyPicker<T: Display + Clone> {
 }
 
 impl<T: Display + Clone> FuzzyPicker<T> {
+    /// Constructs a new `FuzzyPicker` instance with the given list of items.
+    ///
+    /// # Arguments
+    ///
+    /// * `items` - A slice of items implementing `Display + Clone`.
+    ///
+    /// # Returns
+    ///
+    /// A new `FuzzyPicker` instance.
     pub fn new(items: &[T]) -> Self {
         let (_, h) = terminal::size().unwrap();
         Self {
@@ -61,6 +99,16 @@ impl<T: Display + Clone> FuzzyPicker<T> {
         self.selected = self.start_index;
     }
 
+    /// Initiates the interactive item selection process.
+    ///
+    /// Handles keyboard and mouse events to perform fuzzy search, selection,
+    /// and navigation within the item list.
+    ///
+    /// # Returns
+    ///
+    /// `Ok(Some(selected_item))` if an item is selected,
+    /// `Ok(None)` if selection is cancelled,
+    /// `Err(Box<dyn Error>)` for any error encountered during selection.
     pub fn pick(&mut self) -> Result<Option<T>, Box<dyn Error>> {
         let mut picked_item: Option<T> = None;
         self.stdout
