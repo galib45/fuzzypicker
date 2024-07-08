@@ -11,6 +11,7 @@ Add fuzzypicker to your Cargo.toml dependencies:
 ```bash
 cargo add fuzzypicker
 ```
+or
 ```toml
 [dependencies]
 fuzzypicker = "0.1.0"
