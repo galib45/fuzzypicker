@@ -8,23 +8,36 @@
 //! - Interactive selection with keyboard and mouse support.
 //! - Designed for integration into Rust-based command-line tools.
 //!
+//! ## Usage
+//!
+//! Initialize a `FuzzyPicker` instance with `new()` and then set items using `set_items()` before invoking `pick()` to initiate interactive selection.
+//!
 //! ## Example
 //!
 //! ```rust
 //! use fuzzypicker::FuzzyPicker;
 //!
-//! fn main() {
-//!     let items = vec!["rust", "python", "javascript", "java", "c++", "go", "swift"];
+//! let items = vec!["rust", "python", "javascript", "java", "c++", "go", "swift"];
+//! let mut picker = FuzzyPicker::new();
+//! picker.set_items(&items);
 //!
-//!     let mut picker = FuzzyPicker::new(&items);
-//!
-//!     if let Ok(Some(selected_language)) = picker.pick() {
-//!         println!("Selected language: {}", selected_language);
-//!     } else {
-//!         println!("No language selected or selection cancelled.");
-//!     }
+//! if let Ok(Some(selected_item)) = picker.pick() {
+//!     println!("Selected item: {}", selected_item);
+//! } else {
+//!     println!("No item selected or selection cancelled.");
 //! }
 //! ```
+//!
+//! ## Errors
+//!
+//! - Errors during interactive selection are returned as `Err(Box<dyn Error>)`.
+//!
+//! ## Notes
+//!
+//! - The fuzzy matching logic is based on the `SkimMatcherV2` provided by the `fuzzy_matcher` crate.
+//! - Supports keyboard and mouse interaction for item selection and navigation.
+//!
+//! For detailed examples and usage, refer to the [crate documentation](https://docs.rs/fuzzypicker).
 
 use std::io::{Stdout, stdout, Write};
 use std::fmt::Display;
@@ -62,21 +75,28 @@ pub struct FuzzyPicker<T: Display + Clone> {
 }
 
 impl<T: Display + Clone> FuzzyPicker<T> {
-    /// Constructs a new `FuzzyPicker` instance with the given list of items.
+    /// Constructs a new `FuzzyPicker` instance with default settings.
     ///
-    /// # Arguments
-    ///
-    /// * `items` - A slice of items implementing `Display + Clone`.
+    /// The new instance is initialized with:
+    /// - Standard output handle (`stdout`).
+    /// - Default matcher (`SkimMatcherV2`).
+    /// - Empty list of items (`items`).
+    /// - Empty list of display items (`display_items`).
+    /// - Zero for the number of items (`num_of_items`).
+    /// - Empty prompt string (`prompt`).
+    /// - Zero for the selected item index (`selected`).
+    /// - Zero for the start index (`start_index`).
+    /// - Derived end index based on terminal size minus one.
     ///
     /// # Returns
     ///
     /// A new `FuzzyPicker` instance.
-    pub fn new(items: &[T]) -> Self {
+    pub fn new() -> Self {
         let (_, h) = terminal::size().unwrap();
         Self {
             stdout: stdout(), 
             matcher: SkimMatcherV2::default(),
-            items: items.to_vec(), 
+            items: Vec::<T>::new(), 
             display_items: Vec::<String>::new(),
             num_of_items: 0,
             prompt: String::new(), 
@@ -84,6 +104,54 @@ impl<T: Display + Clone> FuzzyPicker<T> {
             start_index: 0, 
             end_index: (h-1) as usize
         }
+    }
+    
+    /// Sets the items to be displayed in the picker.
+    ///
+    /// # Arguments
+    ///
+    /// * `items` - A slice of items implementing `Display + Clone`.
+    ///
+    /// This method replaces the current list of items with the provided `items`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use fuzzypicker::FuzzyPicker;
+    ///
+    /// let items = vec!["rust", "python", "javascript", "java", "c++", "go", "swift"];
+    /// let mut picker = FuzzyPicker::new();
+    /// picker.set_items(&items);
+    /// ```
+    pub fn set_items(&mut self, items: &[T]) {
+        self.items = items.to_vec(); 
+    }
+
+    /// Resets the picker to its initial state with no items.
+    ///
+    /// This method clears all items, display items, resets the number of items,
+    /// clears the prompt, resets the selected item index to zero, and resets
+    /// the start index to zero.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use fuzzypicker::FuzzyPicker;
+    ///
+    /// let items = vec!["rust", "python", "javascript", "java", "c++", "go", "swift"];
+    /// let mut picker = FuzzyPicker::new();
+    /// picker.set_items(&items);
+    ///
+    /// picker.reset();
+    /// assert_eq!(picker.num_of_items, 0);
+    /// ```
+    pub fn reset(&mut self) {
+        self.items = Vec::<T>::new();
+        self.display_items = Vec::<String>::new();
+        self.num_of_items = 0;
+        self.prompt = String::new(); 
+        self.selected = 0;
+        self.start_index = 0;
     }
 
     fn prev_item(&mut self) {
@@ -109,6 +177,22 @@ impl<T: Display + Clone> FuzzyPicker<T> {
     /// `Ok(Some(selected_item))` if an item is selected,
     /// `Ok(None)` if selection is cancelled,
     /// `Err(Box<dyn Error>)` for any error encountered during selection.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use fuzzypicker::FuzzyPicker;
+    ///
+    /// let items = vec!["rust", "python", "javascript", "java", "c++", "go", "swift"];
+    /// let mut picker = FuzzyPicker::new();
+    /// picker.set_items(&items);
+    ///
+    /// if let Ok(Some(selected_item)) = picker.pick() {
+    ///     println!("Selected item: {}", selected_item);
+    /// } else {
+    ///     println!("No item selected or selection cancelled.");
+    /// }
+    /// ```
     pub fn pick(&mut self) -> Result<Option<T>, Box<dyn Error>> {
         let mut picked_item: Option<T> = None;
         self.stdout
