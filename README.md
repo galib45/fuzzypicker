@@ -24,7 +24,8 @@ fn main() {
     ];
 
     // Create a new FuzzyPicker instance
-    let mut picker = FuzzyPicker::new(&items);
+    let mut picker = FuzzyPicker::new();
+    picker.set_items(&items);
 
     // Perform interactive selection
     if let Ok(Some(selected_item)) = picker.pick() {
@@ -32,12 +33,18 @@ fn main() {
     } else {
         println!("Selection cancelled or no item selected.");
     }
+    
+    // The picker can be reset to set new items
+    picker.reset();
+    assert_eq!(picker.num_of_items, 0);
 }
 ```
 ## API
 `struct FuzzyPicker<T: Display + Clone>`
 #### Methods
-- `new(items: &[T]) -> Self`: Constructs a new `FuzzyPicker` instance with a list of items.
+- `new() -> Self`: Constructs a new `FuzzyPicker` instance.
+- `set_items(items: &[T])`: Initializes the picker with a slice of items implementing `Display + Clone`.
+- `reset()`: Resets the picker.
 - `pick() -> Result<Option<T>, Box<dyn Error>>`: Initiates the interactive selection process. Returns Some(selected_item) if an item is selected, or None if selection is cancelled.
 
 ## Contributing
