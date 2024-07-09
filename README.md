@@ -36,7 +36,7 @@ fn main() {
 ```
 ## API
 `struct FuzzyPicker<T: Display + Clone>`
-Methods
+### Methods
 - `new(items: &[T]) -> Self`: Constructs a new `FuzzyPicker` instance with a list of items.
 - `pick() -> Result<Option<T>, Box<dyn Error>>`: Initiates the interactive selection process. Returns Some(selected_item) if an item is selected, or None if selection is cancelled.
 
